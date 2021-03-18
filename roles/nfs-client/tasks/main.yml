@@ -1,0 +1,43 @@
+---
+    - name: Create group
+      group:
+        name: "group1"
+        state: present
+
+    - name: Add the user 'user3'
+      ansible.builtin.user:
+        name: user3
+        password: "{{ '1234' | password_hash('sha512') }}"
+        group: group1
+        home: /AMC
+        shell: /bin/bash
+
+    - name: install nfs client
+      action: apt pkg=nfs-common state=present
+      tags:
+      - nfs
+
+    #- name: install nfs-utils
+    #  apt: name=nfs-utils state=latest
+
+    - name: Create a mountable directory if it does not exist
+      file:
+        path: /AMC
+        state: directory
+        owner: user3
+        group: group1
+        mode: '0775'
+
+    - template:
+        src: exports.j2
+        dest: /etc/exports
+        group: group1
+        mode: '0777'
+
+    - name: enable rpcbind nfslock nfs
+      service:
+        name: "{{ item }}"
+        enabled: yes
+      with_items:
+        - rpcbind
+   
