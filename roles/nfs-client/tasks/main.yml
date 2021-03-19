@@ -28,11 +28,11 @@
         group: group1
         mode: '0775'
 
-    - template:
-        src: exports.j2
-        dest: /etc/exports
-        group: group1
-        mode: '0777'
+#    - template:
+#        src: exports.j2
+#        dest: /etc/exports
+#        group: group1
+#        mode: '0777'
 
     - name: enable rpcbind nfslock nfs
       service:

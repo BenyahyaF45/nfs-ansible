@@ -8,7 +8,7 @@
     - name: Add the user 'user1'
       ansible.builtin.user:
         name: "{{ item }}"
-        password: "{{ '1234' | password_hash('sha512') }}"
+        password: "{{ pass | password_hash('sha512') }}"
         group: group1
         home: /stage/SFTP
         shell: /bin/bash

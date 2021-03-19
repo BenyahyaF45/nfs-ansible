@@ -1,0 +1,12 @@
+---
+- name: run tasks on all hosts
+  hosts : "*"
+  tasks: 
+    - name: create multiple directories in aloop
+      file:
+        path: "$HOME/{{item}}"
+        state: directory
+      loop:
+        - test1
+        - test2
+        - test3 

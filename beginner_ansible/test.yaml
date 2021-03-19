@@ -1,0 +1,21 @@
+---
+- name: "[TEMPLATE]"
+  hosts: all
+  tasks:
+  vars:
+    myapp_conf:
+      - "buffer = True"
+      - "memory = 90mb"
+      - "cache = 1G"
+    - name: "[TEMPLATE] - create D"
+      file:
+        path: /tmp/myapp/
+        state: directory
+        mode: 0755
+            
+
+    - name: "[TEMPLATE] - create var"
+      template:
+        src: myappconf.cfg.j2
+        dest: /tmp/myapp/myapp.cfg
+        mode: 755

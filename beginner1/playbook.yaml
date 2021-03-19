@@ -1,0 +1,30 @@
+---
+- name: "[fz]"
+  hosts: all
+  become: yes
+  tasks:
+
+    - name: "[fz] - copie du fichier"
+      copy:
+        src: ./monfichier.txt
+        dest: /tmp/fz.txt 
+
+    - name: "[fz] - add pierre"
+      lineinfile:
+        path: /tmp/fz.txt
+        line: 'et moi je suis xx'
+
+          
+    - name: "[fz] - change fz"
+      lineinfile:
+        path: /tmp/fz.txt
+        regexp: '(.*)fz(.*)'
+        line: '\1paul\2'
+        backrefs: yes
+
+    - name: "[fz] - change fz"
+      lineinfile:
+        path: /tmp/fz.txt
+        insertbefore: '(.*)fz(.*)'
+        line: "mon prenom est toto"
+      
