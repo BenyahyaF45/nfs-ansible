@@ -1,0 +1,85 @@
+---
+- hosts: node1
+  become: yes
+  tasks:
+    - name: Create group
+      group:
+        name: "group1"
+        state: present
+
+    - name: Add the user 'user1'
+      ansible.builtin.user:
+        name: "{{ item }}"
+        password: "{{ '1234' | password_hash('sha512') }}"
+        group: group1
+        home: /stage/SFTP
+        shell: /bin/bash
+      loop:
+      - user1
+      - user2
+
+    - name: install nfs-kernel-server
+      apt: name=nfs-kernel-server state=latest
+
+    - name: Create a mountable directory if it does not exist
+      file:
+        path: /stage/SFTP
+
+    - name: Create group
+      group:
+        name: "group1"
+        state: present
+
+    - name: Add the user 'user1'
+      ansible.builtin.user:
+        name: "{{ item }}"
+        password: "{{ '1234' | password_hash('sha512') }}"
+        group: group1
+        home: /stage/SFTP
+        shell: /bin/bash
+      loop:
+      - user1
+      - user2
+
+    - name: install nfs-kernel-server
+      apt: name=nfs-kernel-server state=latest
+
+    - name: Create a mountable directory if it does not exist
+      file:
+        path: /stage/SFTP
+        state: directory
+        owner: user1
+        group: group1
+        mode: '0775'
+      loop:
+#      - user1
+#     - user2
+
+    - name: enable rpcbind nfslock nfs
+      service:
+        name: "{{ item }}"
+        enabled: yes
+      with_items:
+        - rpcbind
+        - nfs-server
+    - name: NFS apply change configrue
+      shell: systemctl reload nfs;exportfs -a        state: directory
+        owner: user1  
+        group: group1
+        mode: '0775'
+      loop:
+#      - user1
+#     - user2
+  
+    - name: enable rpcbind nfslock nfs
+      service:
+        name: "{{ item }}"
+        enabled: yes
+      with_items:
+        - rpcbind
+        - nfs-server
+    - name: NFS apply change configrue
+      shell: systemctl reload nfs;exportfs -a
+
+    
+
