@@ -1,41 +1,45 @@
 ---
+# tasks file for n
     - name: Create group
       group:
         name: "{{ grp }}"
         state: present
         gid: 1010
 
-    - name: Add the user 'user3'
+    - name: Add the user user1
       ansible.builtin.user:
-        name: user3
+        name: "{{ item }}"
         password: "{{ pass | password_hash('sha512') }}"
         group: "{{ grp }}"
-        home: "{{ nfsmount }}"
+        home: "{{ rep }}"
         shell: /sbin/nologin
-        uid: 1003
+      loop:
+      - user1
+      - user2
 
-    - name: install nfs client
-      action: apt pkg=nfs-common state=present
-      tags:
-      - nfs
+    - name: install nfs-kernel-server
+      apt: name=nfs-kernel-server state=latest
 
-    - name: Create amc
+    - name: Create stage/SFTP
       file:
-        path: "{{ nfsmount }}"
+        path: "{{ rep }}"
         state: directory
         owner: root
         group: "{{ grp }}"
         mode: '755'
 
-
-    - name: Create a mountable directory if it does not exist
+ 
+    - name: Create stage/SFTP/upload
       file:
-        path: "{{ nfsmount }}/upload"
+        path: "{{ rep }}/upload"
         state: directory
         owner: "{{ item }}"
         group: "{{ grp }}"
+        mode: '777'
       loop:
-      - user3
+      - user1
+      - user2
+ 
 
     - template:
        src: ssh_config.j2
@@ -46,8 +50,11 @@
     - name: restart sshd
       service: name=sshd state=restarted
 
-    #- name: install nfs-utils
-    #  apt: name=nfs-utils state=latest
+    - template:
+       src: exports.j2
+       dest: /etc/exports
+       group: "{{ grp }}"
+       mode: 0777
 
     - name: enable rpcbind nfslock nfs
       service:
@@ -55,12 +62,9 @@
         enabled: yes
       with_items:
         - rpcbind
-   
-    - name: mount volume
-      mount:
-       name="{{ nfsmount }}"
-       src="{{ nfsserver }}:/{{ nfsexport }}"
-       fstype=nfs
-       opts=defaults,rw,bg
-       dump=0
-       state=mounted
+        - nfs-server
+    - name: NFS apply change configrue
+      shell: systemctl reload nfs;exportfs -a
+ 
+
+

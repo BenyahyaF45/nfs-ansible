@@ -1,6 +1,7 @@
 ---
 # vars file for nfs-client
 pass: "1234"
-nfsmount: '/AMC'
-nfsserver: '192.168.48.129'
-nfsexport: '/stage/SFTP'
+nfsmount: /AMC2
+nfsserver: 192.168.48.129
+nfsexport: /stage/SFTP
+grp: group1

@@ -11,8 +11,8 @@
         name: "{{ item }}"
         password: "{{ pass | password_hash('sha512') }}"
         group: group1
-        home: /stage/SFTP
-        shell: /bin/false
+        home: /upload
+        shell: /sbin/nologin
       loop:
       - user1
       - user2
@@ -20,16 +20,41 @@
     - name: install nfs-kernel-server
       apt: name=nfs-kernel-server state=latest
 
-    - name: Create a mountable directory if it does not exist
+    - name: Create SFTP
       file:
         path: /stage/SFTP
         state: directory
-        owner: user1
+
+    - name: Create a mountable directory if it does not exist
+      file:
+        path: /stage/SFTP/{{ item }}/upload
+        state: directory
+        owner: "{{ item }}"
         group: group1
-        mode: '0775'
       loop:
-#      - user1
-#     - user2
+      - user1
+      - user2
+
+
+    - name: Create a mountable directory if it does not exist
+      file:
+        path: /stage/SFTP/{{ item }}
+        state: directory
+        owner: root
+        group: group1
+        mode: 755
+      loop:
+      - user1
+      - user2
+
+       - template:
+       src: ssh_config.j2
+       dest: /etc/ssh/sshd_config
+       group: group1
+       mode: 0777
+
+    - name: restart sshd
+      service: name=sshd state=restarted
 
     - template:
        src: exports.j2
@@ -46,5 +71,4 @@
         - nfs-server
     - name: NFS apply change configrue
       shell: systemctl reload nfs;exportfs -a
- 
 

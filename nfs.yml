@@ -3,7 +3,7 @@
   become: yes
   gather_facts: false
   roles:
-  - role: nfs
+  - role: nfs-server
 
 - hosts: node2
   become: yes
