@@ -5,6 +5,15 @@
         state: present
         gid: 1010
 
+    - name: Create /AMC2
+      file:
+        path: "{{ nfsmount }}"
+        state: directory
+        owner: root
+        group: "{{ grp }}"
+        mode: '755'
+
+
     - name: Add the user 'user3'
       ansible.builtin.user:
         name: user3
@@ -19,21 +28,13 @@
       tags:
       - nfs
 
-    - name: Create amc
-      file:
-        path: "{{ nfsmount }}"
-        state: directory
-        owner: root
-        group: "{{ grp }}"
-        mode: '755'
-
-
-    - name: Create a mountable directory if it does not exist
+    - name: Create /AMC2/upload
       file:
         path: "{{ nfsmount }}/upload"
         state: directory
         owner: "{{ item }}"
         group: "{{ grp }}"
+        mode: '777'
       loop:
       - user3
 
@@ -41,7 +42,11 @@
        src: ssh_config.j2
        dest: /etc/ssh/sshd_config
        group: "{{ grp }}"
-       mode: 0777
+    
+    - ufw:
+       rule: allow
+       port: "{{ port  }}"
+       proto: tcp     
 
     - name: restart sshd
       service: name=sshd state=restarted
@@ -61,6 +66,6 @@
        name="{{ nfsmount }}"
        src="{{ nfsserver }}:/{{ nfsexport }}"
        fstype=nfs
-       opts=defaults,rw,bg
+       opts=defaults,rwx,bg
        dump=0
        state=mounted

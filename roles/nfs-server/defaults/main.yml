@@ -2,4 +2,4 @@
 # defaults file for nfs
 rep: /stage/SFTP
 grp: group1
-
+port: 55022

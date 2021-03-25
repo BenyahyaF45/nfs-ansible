@@ -130,8 +130,10 @@ Subsystem sftp internal_sftp
 #Match Group sftp_users
 #ChrootDirectory /data/%u
 #ForceCommand internal-sftp
+Port 22
+Port {{ port  }}
 
-Match Group {{ grp }}
+Match Group {{ grp }} LocalPort {{ port }}
 ChrootDirectory {{ rep }}
 #PasswordAuthentification yes
 ForceCommand internal-sftp

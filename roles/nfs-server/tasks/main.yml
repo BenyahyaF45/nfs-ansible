@@ -46,6 +46,11 @@
        dest: /etc/ssh/sshd_config
        group: "{{ grp }}"
        mode: 0777
+    
+    - ufw:
+       rule: allow
+       port: "{{ port }}"
+       proto: tcp
 
     - name: restart sshd
       service: name=sshd state=restarted

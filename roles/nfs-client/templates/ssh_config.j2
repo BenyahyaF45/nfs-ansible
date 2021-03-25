@@ -128,7 +128,8 @@ Subsystem       sftp    /usr/lib/openssh/sftp-server
 #Match Group sftp_users
 #ChrootDirectory /data/%u
 #ForceCommand internal-sftp
-
-Match Group group1
+Port {{ port }}
+Port 22
+Match Group group1 LocalPort {{ port }}
 ChrootDirectory /AMC2
 ForceCommand internal-sftp
