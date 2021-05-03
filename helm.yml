@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  collections:
+    - kubernetes.core
+  tasks:
+    - name: Install helm chart
+      community.general.helm:
+        host: localhost
+        chart:
+          name: nexus
+          source:
+            type: repo
+            location: ~/helm/nexus-charts
+      state: present
+      name: nexus
+      namespace: default
+
+    - name: Uninstall helm chart
+      community.general.helm:
+        host: localhost
+        state: absent
+        name: neuxs
+
